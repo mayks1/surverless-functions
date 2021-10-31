@@ -28,3 +28,28 @@ const fetchData = async () => {
 
 window.addEventListener('load', () => fetchData())
 
+result.addEventListener('click', async function (e) {
+  if (e.target.classList.contains('fa-vote-yea')) {
+    const btn = e.target.parentElement
+    const id = btn.dataset.id
+    const voteNode = result.querySelector(`.vote-${id}`)
+    const votes = voteNode.dataset.votes
+    const newVotes = await modifyData(id, votes)
+    title.textContent = 'Survey'
+    if (newVotes) {
+      voteNode.textContent = `${newVotes} votes`
+      voteNode.dataset.votes = newVotes
+    }
+  }
+})
+
+async function modifyData(id, votes) {
+  title.textContent = 'Loading ...'
+  try {
+    const { data } = await axios.put('/api/4-survey', { id, votes })
+    const newVotes = data.fields.votes
+    return newVotes
+  } catch (error) {
+    return null
+  }
+}
